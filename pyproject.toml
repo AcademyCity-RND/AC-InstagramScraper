@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ac-instagram-scraper"
+version = "1.0.0"
+description = "AcademyCity High-Performance Zero-Auth Instagram Scraper Engine"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "bottle>=0.12.25",
+    "cheroot>=10.0.1",
+    "curl_cffi>=0.7.4",
+    "pydantic>=2.7.0",
+    "python-dotenv>=1.0.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --ignore=tests_ignore"
+testpaths = [
+    "tests",
+    "instagram/test_parsers.py",
+    "instagram/test_users.py",
+]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"

@@ -1,16 +1,25 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PORT=8000
 
-COPY requirements.txt .
+# Install minimal OS packages if needed
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN python -m pip install --no-cache-dir -r requirements.txt
-
-RUN mkdir app
 WORKDIR /app
+
+COPY requirements.txt requirements-dev.txt* ./
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
+
 COPY . /app
 
 EXPOSE 8000
 
-# No browser needed — the scraper talks to Instagram's own web and app APIs over plain HTTP.
+# Standalone high-performance Instagram scraper microservice (curl_cffi TLS impersonation)
 CMD ["python", "run.py"]
