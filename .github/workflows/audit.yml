@@ -4,11 +4,10 @@ on:
   push:
     branches:
       - master
-      - main
   pull_request:
     branches:
       - master
-      - main
+    types: [opened, synchronize, reopened]
   schedule:
     - cron: '0 0 * * 1' # Jalankan otomatis tiap Senin pukul 00:00 UTC (Mirroring Axiom)
 

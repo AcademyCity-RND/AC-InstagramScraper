@@ -4,12 +4,10 @@ on:
   push:
     branches:
       - master
-      - main
-      - 'feat/**'
   pull_request:
     branches:
       - master
-      - main
+    types: [opened, synchronize, reopened]
 
 jobs:
   test-and-lint:
