@@ -1,10 +1,18 @@
 services:
   instagram-scraper:
     build: .
+    container_name: ac_instagram_scraper
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      # Port 8005 di host agar tidak bertabrakan dengan Axiom Backend (8000) & ChromaDB (8001)
+      - "${SCRAPER_HOST_PORT:-8005}:8000"
     environment:
       - PORT=8000
-      # Optional — Instagram does not rate-limit at normal volume, so leave this unset.
+      # Optional: Proxy jika dibutuhkan di lingkungan jaringan tertentu
       # - INSTAGRAM_PROXY=http://user:pass@host:port
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

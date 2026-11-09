@@ -1,4 +1,4 @@
-"""The 19 Instagram endpoints. Every path is served with and without the
+"""The 20 Instagram endpoints + AXIOM Standard Dataset Endpoints. Every path is served with and without the
 `/instagram` prefix, so code generated against the hosted API on RapidAPI
 (paths like /users/profile) runs unchanged against this server."""
 import json
@@ -14,6 +14,7 @@ from instagram.posts import get_comments, get_details, get_media
 from instagram.posts import resolve as resolve_post
 from instagram.users import (get_highlights, get_posts, get_profile, get_reels, get_similar)
 from instagram.users import resolve as resolve_user
+from instagram.axiom_adapter import fetch_comments_axiom
 
 
 def json_response(data, status=200):
@@ -110,6 +111,8 @@ ENDPOINTS = [
                                                  cursor=q("cursor"))),
     ("/users/resolve", lambda: resolve_user(user())),
     ("/posts/resolve", lambda: resolve_post(post())),
+    # AXIOM Standard Dataset Endpoint
+    ("/axiom/comments", lambda: fetch_comments_axiom(q("post") or required("url"), max_comments=min(400, int(q("max") or 100)))),
 ]
 
 for _path, _fn in ENDPOINTS:

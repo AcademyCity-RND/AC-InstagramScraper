@@ -1,3 +1,5 @@
-bottle
-cheroot
-curl_cffi
+bottle>=0.12.25
+cheroot>=10.0.1
+curl_cffi>=0.7.4
+pydantic>=2.7.0
+python-dotenv>=1.0.0

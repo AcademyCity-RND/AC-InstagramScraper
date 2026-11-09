@@ -1,162 +1,184 @@
-# 📸 Instagram Scraper
+# 📸 AC-InstagramScraper
 
-Instagram Scraper is a **free and open-source** scraper that gets you **unlimited** detailed Instagram data for free.
+[![CI Pipeline](https://github.com/AcademyCity-RND/AC-InstagramScraper/actions/workflows/ci.yml/badge.svg)](https://github.com/AcademyCity-RND/AC-InstagramScraper/actions/workflows/ci.yml)
+[![Security Audit](https://github.com/AcademyCity-RND/AC-InstagramScraper/actions/workflows/audit.yml/badge.svg)](https://github.com/AcademyCity-RND/AC-InstagramScraper/actions/workflows/audit.yml)
+[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![Dataset Standard](https://img.shields.io/badge/format-RFC%204180-success.svg)](https://datatracker.ietf.org/doc/html/rfc4180)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## ✨ What Can I Get?
+**AC-InstagramScraper** is a high-performance, zero-authentication Instagram data and comment extraction engine maintained by **AcademyCity-RND**. Engineered for research, digital forensics, and OSINT workflows, it extracts rich public Instagram metadata and live comment threads without requiring user credentials, login prompts, or browser overhead.
 
-- 👤 **Profiles of 3B+ monthly users** — bio, links, followers, post count, category & highlights
-- 🎬 **Every post & reel** — captions, likes, comments, play counts, audio, tagged users & HD media
-- 💬 **Comments, stories & look-alikes** — comment pages, every highlight story, 50 similar accounts
-- 🔥 **Hashtags, places, songs & trends** — top reels per hashtag, locations, audio pages & what's trending now
+---
 
-## 🎥 Example: A Full Instagram Profile
+## 📜 Attribution & Citation
 
-```json
-{
-  "id": "11830955",
-  "username": "taylorswift",
-  "full_name": "Taylor Swift",
-  "link": "https://www.instagram.com/taylorswift/",
-  "profile_picture": "https://scontent.cdninstagram.com/v/t51.82787-19/818902239_18699523633054956_5239385355012066680_n.jpg?_nc_cat=1&ccb=7-5&_nc_sid=bf7eb4&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&_nc_ohc=LjiOo-1I3FoQ7kNvwH8yxWN&_nc_oc=AdqsdA37nXgNuLPe0Lk_gMakAiebU0lKGdgDL8HCJT8yuS4RUQLlKvmbmPYBtw5JiQc&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_gid=UzJZz7q-jWuOJVdxG5fVHA&_nc_ss=7fa8c&oh=00_AQI1TEFv5iCKSwY0a7JywYW8UnHvwyyWbhRYOELzvhuY_Q&oe=6AB978C4",
-  "is_verified": true,
-  "is_private": false,
-  "biography": "And, baby, that's sh0w business f0r y0u. ❤️‍🔥",
-  "bio_links": [
-    { "title": null, "link": "http://store.taylorswift.com", "type": "external", "is_pinned": false }
-  ],
-  "external_link": "http://store.taylorswift.com",
-  "account_type": "creator",
-  "follower_count": 272831029,
-  "following_count": 0,
-  "post_count": 709,
-  "has_reels": true,
-  "threads_username": "taylorswift",
-  "highlights": [
-    {
-      "id": "18520347457009686",
-      "title": "❤️‍🔥",
-      "link": "https://www.instagram.com/stories/highlights/18520347457009686/"
-    },
-    {
-      "id": "17991384335533906",
-      "title": "🤍",
-      "link": "https://www.instagram.com/stories/highlights/17991384335533906/"
-    }
-  ],
-  "has_more_highlights": true
-}
+This repository is a standardized fork and enhancement of the original open-source project:
+- **Upstream Repository:** [omkarcloud/instagram-scraper](https://github.com/omkarcloud/instagram-scraper) by Omkar Cloud
+- **Upstream License:** MIT License
+
+### Enhancements Introduced in This Fork:
+- **AXIOM Cyber Intelligence Pipeline Compatibility**: Standardized dataset export schema matching RFC 4180 CSV and JSON formats.
+- **Python 3.11 Runtime Standardization**: Aligned container environment, packages, and type compatibility with the AXIOM backend stack.
+- **Automated CI/CD & Security Auditing**: Full GitHub Actions test suites and automated vulnerability scanning via `pip-audit`.
+- **Dependabot Integration**: Automated weekly dependency audits and security patch PRs.
+- **Rate Pacing & Resilience**: Configurable cursor pagination with human delay intervals to mitigate velocity blocks.
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technology | Description |
+| :--- | :--- | :--- |
+| **Runtime** | `Python 3.11` | Core execution environment ensuring stability and type safety |
+| **Network & TLS** | `curl_cffi` | Advanced browser TLS fingerprint impersonation (JA3/JA4) bypassing Cloudflare & Meta WAF |
+| **Web Server** | `Bottle & Cheroot` | Microservice WSGI routing engine with high concurrency and low memory footprint |
+| **Validation** | `Pydantic` | Data validation and structured schema transformation |
+| **Testing & Quality** | `Pytest & Flake8` | Unit testing and syntax verification suite |
+| **Security Audit** | `pip-audit` | Automated dependency vulnerability detection |
+| **Containerization** | `Docker` | Multi-stage container packaging for portable deployment |
+| **CI/CD** | `GitHub Actions` | Automated linting, unit testing, and weekly dependency management |
+
+---
+
+## 🔄 Workflow Architecture
+
+The following diagram illustrates the complete data extraction and transformation pipeline from target URL input to structured dataset export:
+
+```mermaid
+flowchart TD
+    A["Target Input URL / Shortcode"] --> B["refs.resolve_post: URL Parser & ID Normalizer"]
+    B --> C["full_item: Public Post & Creator Metadata Probe"]
+    C --> D["curl_cffi Engine: Browser TLS Impersonation (JA3/JA4)"]
+    D --> E["Internal GraphQL: PolarisLoggedOutDesktopWWWPostCommentsPaginationQuery"]
+    
+    subgraph PaginationLoop ["Pagination & Extraction Loop"]
+        E --> F["Extract Page of Real Comments"]
+        F --> G{"Has Next Cursor and Below Limit?"}
+        G -->|"Yes"| H["Human Pacing Delay (1.5 - 2.5s)"]
+        H --> E
+        G -->|"No"| I["All Comments Collected"]
+    end
+
+    I --> J["axiom_adapter: RFC 4180 Schema Formatter"]
+    J --> K1["Axiom CSV File (UTF-8-SIG)"]
+    J --> K2["JSON Response (/axiom/comments)"]
 ```
 
-*Trimmed for readability.*
+---
 
-## 🚀 Unlimited Free Instagram Data — Get It in 60 Seconds
+## 🛡️ AXIOM Standard Dataset Schema
 
-1️⃣ Clone and install:
+All comments processed through the AXIOM adapter (`instagram.axiom_adapter`) adhere strictly to the RFC 4180 standard schema:
+
+| Column Name | Type | Description | Example |
+| :--- | :--- | :--- | :--- |
+| `comment_id` | `string` | Unique comment identifier | `18029384729102` |
+| `created_at` | `string` | ISO 8601 UTC timestamp | `2026-11-08T14:30:00+00:00` |
+| `author_username` | `string` | Comment author handle with `@` prefix | `@budi_santoso` |
+| `author_display_name` | `string` | Display name or title-cased fallback | `Budi Santoso` |
+| `raw_text` | `string` | Clean single-line comment body | `Kawal terus aspirasi rakyat secara damai!` |
+| `likes_count` | `integer`| Total likes on the comment | `42` |
+| `is_reply` | `boolean`| Whether the item is a reply to another comment | `False` |
+| `target_context` | `string` | Context string with creator and caption snippet | `IG Creator: @kompascom \| Caption: Demo...` |
+
+---
+
+## 🚀 Quickstart Guide
+
+### 1. Installation
+
 ```bash
-git clone https://github.com/omkarcloud/instagram-scraper
-cd instagram-scraper
-python -m pip install -r requirements.txt
+# Clone the repository
+git clone https://github.com/AcademyCity-RND/AC-InstagramScraper.git
+cd AC-InstagramScraper
+
+# Install core dependencies
+pip install -r requirements.txt
+
+# (Optional) Install development and testing dependencies
+pip install -r requirements-dev.txt
 ```
 
-2️⃣ Start the API:
-```bash
-python run.py
-```
-
-3️⃣ Get your first data:
-```bash
-curl "http://localhost:8000/users/profile?user=taylorswift"
-```
-
-```json
-{
-  "id": "11830955",
-  "username": "taylorswift",
-  "full_name": "Taylor Swift",
-  "link": "https://www.instagram.com/taylorswift/",
-  "is_verified": true,
-  "biography": "And, baby, that's sh0w business f0r y0u. ❤️‍🔥",
-  "external_link": "http://store.taylorswift.com",
-  "account_type": "creator",
-  "follower_count": 272830984,
-  "following_count": 0,
-  "post_count": 709,
-  "threads_username": "taylorswift",
-  "highlights": [
-    { "id": "18520347457009686", "title": "❤️‍🔥" },
-    { "id": "17991384335533906", "title": "🤍" }
-  ]
-}
-```
-
-All 19 endpoints are now live at `http://localhost:8000`.
-
-## 📚 Endpoints
-
-19 endpoints cover everything you need.
-
-| Endpoint | Path | Returns |
-|---|---|---|
-| User Profile | `/users/profile` | Bio, links, followers, post count, category and highlights |
-| User Posts | `/users/posts` | A user's posts with likes, comments, captions and media, 12 per page |
-| User Reels | `/users/reels` | A user's reels with play counts, video links and audio, 12 per page |
-| Post Details | `/posts/details` | Everything about one post or reel in a single call |
-| Post Comments | `/posts/comments` | Comments with text, likes and commenter, page by page |
-| Post Media | `/posts/media` | Every image size and video rendition, ready to download |
-| User Highlights | `/users/highlights` | Story highlights with titles and covers |
-| Highlight Stories | `/highlights/items` | Every story in a highlight with media links |
-| Similar Users | `/users/similar` | Up to 50 accounts Instagram suggests next to a user |
-| Hashtag Posts | `/hashtags/posts` | Top reels for any hashtag, plus related keywords |
-| Search Keywords | `/search/keywords` | Top reels for any keyword, plus a topic summary |
-| Location Details | `/locations/details` | Name, address, coordinates, post count and top posts |
-| Location Posts | `/locations/posts` | Top or most recent posts tagged at a place |
-| Audio Details | `/audio/details` | A song's title, artist, cover and reel count |
-| Audio Reels | `/audio/reels` | Reels that use a song, 12 per page |
-| Trending | `/explore/trending` | What's trending now: keywords, moments and rising profiles |
-| Trending Section | `/explore/section` | More entries from any trending section |
-| Resolve User | `/users/resolve` | Username to numeric user ID, and back |
-| Resolve Post | `/posts/resolve` | Post shortcode or link to media ID, and back |
-
-## 🔍 Exploring Parameters
-
-The same API is published on RapidAPI, and its playground is the easiest place to try parameters and see raw responses. Once a request looks right, run it locally for **unlimited free** data.
-
-1. [Subscribe to the free plan](https://rapidapi.com/OmkarCloud/api/best-instagram-scraper-free-1000-calls/pricing) — 1,000 calls/month, no credit card.
-2. [Try the endpoints in the playground](https://rapidapi.com/OmkarCloud/api/best-instagram-scraper-free-1000-calls/playground) — every param is pre-filled, so you see real data in one click.
-3. Copy the generated code and replace `https://best-instagram-scraper-free-1000-calls.p.rapidapi.com` with `http://localhost:8000`. It will now run against your local API.
+### 2. Python SDK Usage (Direct Embedding)
 
 ```python
-import requests
+from instagram import fetch_comments_axiom, write_axiom_csv
 
-# generated by the playground, host swapped for the local API
-response = requests.get(
-    "http://localhost:8000/users/profile",
-    params={"user": "taylorswift"},
-)
-print(response.json())
+# Extract real public comments live without login
+target_url = "https://www.instagram.com/p/DfCR3JPlK9F/"
+result = fetch_comments_axiom(target_url, max_comments=100)
+
+print(f"Total extracted: {result['total_extracted']} comments")
+print(f"Creator: {result['post_info'].get('owner_username')}")
+
+# Save directly to RFC 4180 CSV
+write_axiom_csv("output/dataset_axiom.csv", result["comments"])
 ```
 
-## 💬 Have Questions? We Have Answers.
+### 3. Microservice API Server
 
-You're a developer — we know how hard completing a project can be. So we offer full support: just message us and we'll reply ✅ with a solution within 1 working day.
+```bash
+# Start server (default port: 8000)
+python run.py
 
-[![Message Us on WhatsApp about Instagram Scraper](https://raw.githubusercontent.com/omkarcloud/assets/master/images/whatsapp-us.png)](https://www.omkar.cloud/l/instagram-scraper-github-whatsapp)
+# Query AXIOM-formatted comments
+curl "http://localhost:8000/axiom/comments?url=https://www.instagram.com/p/DfCR3JPlK9F/&max=100"
 
-[![Ask Us by Email about Instagram Scraper](https://raw.githubusercontent.com/omkarcloud/assets/master/images/ask-on-email.png)](mailto:happy.to.help@omkar.cloud?subject=Help%20with%20Instagram%20Scraper%20API&body=I%20need%20help%20using%20the%20Instagram%20Scraper%20API.)
+# Healthcheck
+curl "http://localhost:8000/health"
+```
 
-## ⚡ Popular Scrapers by Omkar Cloud
+---
 
-- [**Google Maps Scraper (3,100+ GitHub Stars)**](https://github.com/omkarcloud/google-maps-scraper) — type "dentists in New York", get every business as a ready-to-call lead list: phones, emails, websites & reviews. Up to 100K free leads/month.
-- [**IMDb Scraper**](https://github.com/omkarcloud/imdb-scraper) — movies, TV shows, ratings, cast & box office
-- [**Threads Scraper**](https://github.com/omkarcloud/threads-scraper) — Threads posts, profiles, replies & search
-- [**G2 Scraper**](https://www.omkar.cloud/tools/g2-scraper) — G2 product details, ratings & AI-found contacts
-- [**Website Email Contact Scraper**](https://www.omkar.cloud/tools/website-email-contact-scraper) — emails, phones & socials from any website
-- [**AliExpress Scraper**](https://www.omkar.cloud/tools/aliexpress-scraper-api) — live product details, SKU variants, stock & shipping
+## 📚 Standard API Endpoints
 
-## ⭐ Love It? [Star It ⭐!](https://github.com/omkarcloud/instagram-scraper)
+The microservice serves both standard endpoints and `/axiom/*` intelligence endpoints:
 
-Star the repo ⭐ and become my star hero!
+| Endpoint | Method | Parameter | Description |
+| :--- | :--- | :--- | :--- |
+| `/axiom/comments` | `GET` | `url`, `max` | **AXIOM standardized live comments extraction** |
+| `/posts/details` | `GET` | `post` | Complete metadata: caption, likes, creator, media URLs |
+| `/posts/comments` | `GET` | `post`, `cursor` | Raw paginated comments directly from GraphQL |
+| `/posts/media` | `GET` | `post` | Direct high-resolution image and video download renditions |
+| `/users/profile` | `GET` | `user` | Profile bio, followers, counts, and category details |
+| `/users/posts` | `GET` | `user`, `cursor` | User timeline posts (12 items per page) |
+| `/users/reels` | `GET` | `user`, `cursor` | User Reels with view counts and audio IDs |
+| `/hashtags/posts` | `GET` | `tag`, `cursor` | Top trending reels and posts for a given hashtag |
+| `/search/keywords`| `GET` | `query`, `cursor`| Keyword-based topic search across Instagram |
 
-It's just 1 click, but it means the world to me.
+---
 
-[![Star us on GitHub](https://raw.githubusercontent.com/omkarcloud/google-maps-scraper/master/screenshots/star-us.png)](https://github.com/omkarcloud/instagram-scraper)
+## 🐳 Docker Deployment
+
+Build and run the containerized service:
+
+```bash
+# Build the Docker image
+docker build -t ac-instagram-scraper:1.0.0 .
+
+# Run the container
+docker run -d --name ac_scraper -p 8000:8000 ac-instagram-scraper:1.0.0
+
+# Verify container status
+curl http://localhost:8000/health
+```
+
+---
+
+## 🧪 Testing
+
+Run the automated test suite locally:
+
+```bash
+# Run pytest with verbosity
+pytest -v
+
+# Run security audit on dependencies
+pip-audit -r requirements.txt
+```
+
+---
+
+## ⚖️ License
+
+Distributed under the **MIT License**. See `LICENSE` for details.

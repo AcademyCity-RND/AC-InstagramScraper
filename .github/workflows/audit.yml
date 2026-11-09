@@ -1,0 +1,33 @@
+name: Security Audit
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 0 * * 1' # Jalankan otomatis tiap Senin pukul 00:00 UTC (Mirroring Axiom)
+
+jobs:
+  security-audit:
+    name: Dependency Vulnerability Scan (pip-audit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Audit Tool (pip-audit)
+        run: pip install pip-audit
+
+      - name: Run Vulnerability Scan on Requirements
+        run: |
+          pip-audit -r requirements.txt --desc auto

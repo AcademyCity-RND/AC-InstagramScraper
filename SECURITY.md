@@ -1,21 +1,28 @@
-# Security Policy for the Instagram Scraper Project
+# Security Policy for AC-InstagramScraper
 
-## Disclaimer
+## 1. Disclaimer
 
-By using Instagram Scraper, you agree to comply with all applicable local and international laws related to data scraping, copyright, and privacy. The developers of Instagram Scraper will not be held liable for any misuse of this software. It is the user's sole responsibility to ensure adherence to all relevant laws regarding data scraping, copyright, and privacy, and to use Instagram Scraper in an ethical and legal manner, in line with both local and international regulations.
+By using **AC-InstagramScraper**, you agree to comply with all applicable local and international laws, terms of service, copyright, and privacy regulations. The developers and contributors of AC-InstagramScraper will not be held liable for any misuse, abuse, or unauthorized data extraction activities conducted using this software. It is the user's sole responsibility to ensure ethical, responsible, and compliant usage in educational, research, and authorized forensic auditing contexts.
 
-## 1. Reporting a Vulnerability
+## 2. Supported Versions
 
-We take the privacy and security of the Instagram Scraper Project very seriously. If you have discovered a security vulnerability or have concerns about the project, we appreciate your assistance in responsibly disclosing it to us.
+We provide active security updates and dependency maintenance for the following branches:
 
-To report a security issue or express a concern, please email Chetan Jain at [chetan@omkar.cloud](mailto:chetan@omkar.cloud). We will promptly respond to your concerns.
+| Branch | Supported | Notes |
+| :--- | :--- | :--- |
+| `master` | :white_check_mark: | Active production release & CI/CD verified |
+| `feat/*` | :warning: | Feature branches (under active testing) |
 
-## 2. Use at Your Own Risk
+## 3. Reporting a Vulnerability
 
-This project is provided for ethical and legal purposes only. It must be used in compliance with all relevant local and international laws and is not intended for unauthorized or illegal use.
+We take the security and stability of the AC-InstagramScraper engine very seriously:
 
-## 3. Contact
+1. If you discover a security vulnerability or sensitive bug, please **do not open a public issue**.
+2. Instead, report it responsibly via **GitHub Private Vulnerability Reporting** through the Security tab of the repository:
+   - [https://github.com/AcademyCity-RND/AC-InstagramScraper/security/advisories](https://github.com/AcademyCity-RND/AC-InstagramScraper/security/advisories)
+3. Please include detailed steps to reproduce the issue, proof of concept (PoC), and potential mitigation.
+4. We aim to acknowledge and address all valid security disclosures promptly.
 
-For questions regarding this security policy or the security of the Instagram Scraper Project, please contact [chetan@omkar.cloud](mailto:chetan@omkar.cloud).
+## 4. Automated Security Audits
 
-The information in this `SECURITY.md` is provided "as is," without any kind of warranty.
+This repository enforces automated vulnerability audits on every push, pull request, and weekly schedule using `pip-audit` via GitHub Actions to ensure zero known vulnerabilities in our dependency tree.
