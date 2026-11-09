@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # 1. Dependabot untuk Python Dependencies (Mirroring Axiom Standard)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "master"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
