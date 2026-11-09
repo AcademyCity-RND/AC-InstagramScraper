@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PORT=8000
 
-# Install minimal OS packages if needed
+# Install minimal OS packages (curl for healthcheck, ca-certificates for TLS)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
@@ -20,6 +20,9 @@ RUN pip install --upgrade pip && \
 COPY . /app
 
 EXPOSE 8000
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
 
 # Standalone high-performance Instagram scraper microservice (curl_cffi TLS impersonation)
 CMD ["python", "run.py"]
