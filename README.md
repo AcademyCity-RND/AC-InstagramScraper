@@ -49,6 +49,40 @@ Instagram Scraper is a **free and open-source** scraper that gets you **unlimite
 
 *Trimmed for readability.*
 
+## 🛡️ AcademyCity AXIOM Compatibility Engine
+
+This repository is maintained by **AcademyCity-RND** ([AC-InstagramScraper](https://github.com/AcademyCity-RND/AC-InstagramScraper)) and standardized for integration with the **AXIOM Cyber Intelligence & Forensics Pipeline**:
+
+- **Zero-Auth Live Comment Extraction**: Utilizes `PolarisLoggedOutDesktopWWWPostCommentsPaginationQuery` combined with `curl_cffi` browser TLS fingerprint impersonation to extract authentic live public Instagram comments without requiring user credentials, login, or session cookies.
+- **AXIOM RFC 4180 Dataset Schema**: Built-in adapter (`instagram.axiom_adapter`) formats extracted data directly to match Axiom's standard dataset schema:
+  `comment_id, created_at, author_username, author_display_name, raw_text, likes_count, is_reply, target_context`.
+- **Dual Interface**: Use as an embedded high-performance Python library or as a containerized REST API (`/axiom/comments`).
+- **CI/CD Quality & Security Gates**: GitHub Actions pipeline for Python 3.11 with automated vulnerability scanning (`pip-audit`) and automated dependency management via GitHub Dependabot.
+
+### Python SDK Usage (AXIOM Mode)
+
+```python
+from instagram import fetch_comments_axiom, write_axiom_csv
+
+# Extract live public comments without login
+result = fetch_comments_axiom("https://www.instagram.com/p/SHORTCODE/", max_comments=100)
+
+print(f"Extracted {result['total_extracted']} comments for {result['post_info'].get('owner_username')}")
+
+# Save directly to RFC 4180 standard CSV (UTF-8-SIG)
+write_axiom_csv("output/dataset_axiom.csv", result["comments"])
+```
+
+### Microservice API Usage
+
+```bash
+# Run server
+python run.py
+
+# Query live comments in AXIOM format
+curl "http://localhost:8000/axiom/comments?url=https://www.instagram.com/p/SHORTCODE/&max=100"
+```
+
 ## 🚀 Unlimited Free Instagram Data — Get It in 60 Seconds
 
 1️⃣ Clone and install:
