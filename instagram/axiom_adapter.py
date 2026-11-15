@@ -98,6 +98,8 @@ def fetch_comments_axiom(
         pass
 
     all_axiom_comments: List[Dict[str, Any]] = []
+    seen_comment_ids = set()
+    seen_cursors = set()
     cursor: Optional[str] = None
     has_more = True
 
@@ -107,13 +109,27 @@ def fetch_comments_axiom(
         if not batch:
             break
 
+        new_items = 0
         for c in batch:
+            cid = str(c.get("pk") or c.get("id") or "")
+            if cid and cid in seen_comment_ids:
+                continue
+            if cid:
+                seen_comment_ids.add(cid)
             formatted = format_comment_to_axiom(c, target_context=target_context)
+            formatted["source"] = "live"
             all_axiom_comments.append(formatted)
+            new_items += 1
             if len(all_axiom_comments) >= max_comments:
                 break
 
-        cursor = res.get("next_cursor")
+        next_cursor = res.get("next_cursor")
+        # Hentikan jika tidak ada komentar baru atau cursor berulang / stagnan
+        if new_items == 0 or not next_cursor or next_cursor in seen_cursors or next_cursor == cursor:
+            break
+
+        seen_cursors.add(next_cursor)
+        cursor = next_cursor
         has_more = bool(res.get("has_more") and cursor)
 
         if has_more and len(all_axiom_comments) < max_comments:
@@ -121,6 +137,7 @@ def fetch_comments_axiom(
             time.sleep(pause)
 
     return {
+        "source": "live",
         "post_info": post_meta,
         "target_context": target_context,
         "total_extracted": len(all_axiom_comments),
